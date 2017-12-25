@@ -18,12 +18,68 @@
 	<script type="text/javascript">
 		var version = "#VERSION#";
 	</script>
+	<!-- Below is the initialisation snippet for my Firebase project. It will vary for each project. -->
+	<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase-firestore.js"></script>
+	<script>
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyB0VJ8crLF5GZDzMaRjxb8Ki9JgWfhNt7Q",
+		authDomain: "mirror-happi.firebaseapp.com",
+		databaseURL: "https://mirror-happi.firebaseio.com",
+		projectId: "mirror-happi",
+		storageBucket: "mirror-happi.appspot.com",
+		messagingSenderId: "948740577789"
+	};
+	firebase.initializeApp(config);
+	</script>
+	<script>
+		var docRef = null;
+
+		var getRealtimeUpdates = function() {
+			docRef.onSnapshot({includeMetadataChanges: true}, doc => {
+				console.log(doc);
+				if (doc && doc.exists) {
+					const myData = doc.data();
+					var eventsList = myData.eventsList;
+					window.eventsListTest = eventsList;
+					if (eventsList === undefined) {
+						return;
+					}
+					console.log("Events: " + eventsList);
+					document.querySelector(".region.top.left .container").innerHTML = "";
+
+					if (eventsList.length === 0)
+						document.querySelector(".region.top.left .container").innerHTML += "You have no upcoming events." + "<br/>";
+					else
+						for (var i in eventsList)
+							document.querySelector(".region.top.left .container").innerHTML += eventsList[i] + "<br/>";
+				}
+			})
+		};
+
+		var signin = function(el) {
+			var array = new Uint32Array(1);
+			window.crypto.getRandomValues(array);
+
+			var firestore = firebase.firestore();
+			var path = "mirror-happi-app/room-" + array[0];
+			docRef = firestore.doc(path);
+			docRef.set({
+				user: null
+			});
+
+			getRealtimeUpdates();
+
+			el.parentElement.innerHTML = "Please visit the following url using your smartphone/computer:<br/>" + "https://mirror-happi.firebaseapp.com" + "<br/><br/>Sign in to your Gmail Account<br/><br/>Then enter the following code:<br/>" + array[0];
+		};
+	</script>
 </head>
 <body>
 	<div class="region fullscreen below"><div class="container"></div></div>
 	<div class="region top bar">
 		<div class="container"></div>
-		<div class="region top left"><div class="container"></div></div>
+		<div class="region top left"><div class="container xsmall"><button onclick="signin(this)">Sign In</button></div></div>
 		<div class="region top center"><div class="container"></div></div>
 		<div class="region top right"><div class="container"></div></div>
 	</div>

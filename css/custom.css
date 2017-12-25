@@ -13,6 +13,10 @@
     cursor: auto;
  }
 
+ .region.top.left .container {
+     display: block !important;
+ }
+
  body {
  	
  }
